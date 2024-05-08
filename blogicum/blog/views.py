@@ -15,7 +15,7 @@ User = get_user_model()
 def get_actual_posts():
     return Post.objects.filter(
         is_published=True, category__is_published=True,
-        pub_date__lt=timezone.now()).order_by('pub_date')
+        pub_date__lt=timezone.now()).order_by('-pub_date')
 
 
 def index(request):
@@ -73,8 +73,8 @@ def profile(request, username):
     if request.user.username != username:
         posts = get_actual_posts().filter(author__username=username)
     else:
-        posts = Post.objects.filter(author__username=username).
-        order_by('pub_date')
+        posts = Post.objects.filter(author__username=username).\
+            order_by('-pub_date')
     paginator = Paginator(posts, POSTS_PER_PAGE)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
