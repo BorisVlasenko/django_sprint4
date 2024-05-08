@@ -15,7 +15,7 @@ User = get_user_model()
 def get_actual_posts():
     return Post.objects.filter(
         is_published=True, category__is_published=True,
-        pub_date__lt=timezone.now())
+        pub_date__lt=timezone.now()).order_by('-pub_date')
 
 
 def index(request):
