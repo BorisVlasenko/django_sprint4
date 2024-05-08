@@ -73,7 +73,7 @@ def profile(request, username):
     if request.user.username != username:
         posts = get_actual_posts().filter(author__username=username)
     else:
-        posts = Post.objects.filter(author__username=username)
+        posts = Post.objects.filter(author__username=username).order_by('-date')
     paginator = Paginator(posts, POSTS_PER_PAGE)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
