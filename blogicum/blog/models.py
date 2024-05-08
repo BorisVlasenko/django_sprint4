@@ -30,6 +30,14 @@ class Post(BaseModel):
     category = models.ForeignKey(
         'Category', on_delete=models.SET_NULL, null=True,
         verbose_name='Категория')
+    image = models.ImageField(
+        'Изображение', blank=True, upload_to='post_images')
+
+    def __str__(self):
+        return self.title
+
+    def get_comments(self):
+        return self.comments.order_by('created_at')
 
     class Meta:
         verbose_name = 'публикация'
@@ -45,6 +53,9 @@ class Category(BaseModel):
                             'разрешены символы латиницы, цифры, дефис и '
                             'подчёркивание.')
 
+    def __str__(self):
+        return self.title
+
     class Meta:
         verbose_name = 'категория'
         verbose_name_plural = 'Категории'
@@ -53,6 +64,21 @@ class Category(BaseModel):
 class Location(BaseModel):
     name = models.CharField('Название места', max_length=256)
 
+    def __str__(self):
+        return self.name
+
     class Meta:
         verbose_name = 'местоположение'
         verbose_name_plural = 'Местоположения'
+
+
+class Comment(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE,
+                             related_name='comments')
+    text = models.TextField('Комментарий', blank=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'комментарий'
+        verbose_name_plural = 'Комментарии'
