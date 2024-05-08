@@ -4,7 +4,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-w_21y!=u(apcu+k3!p&7*bvtov@!2a==u7py&at&cpdx)_7^y('
 
-DEBUG = True
+DEBUG = 1
 
 ALLOWED_HOSTS = ['*']
 
@@ -96,3 +96,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = 'blog:index'
 
 MEDIA_ROOT = BASE_DIR / 'media'
+
+CSRF_FAILURE_VIEW = 'pages.views.error403'
+
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+
+EMAIL_FILE_PATH = BASE_DIR / 'sent_emails'
