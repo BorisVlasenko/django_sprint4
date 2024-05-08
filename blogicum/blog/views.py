@@ -68,6 +68,7 @@ def create_post(request, pk=None):
     return render(request, 'blog/create.html', context)
 
 
+@login_required
 def profile(request, username):
     user = get_object_or_404(User, username=username)
     if request.user.username != username:
@@ -82,6 +83,7 @@ def profile(request, username):
         'page_obj': page_obj})
 
 
+@login_required
 def edit_profile(request):
     form = ProfileForm(request.POST or None, instance=request.user)
     if request.POST:
@@ -93,6 +95,7 @@ def edit_profile(request):
         return render(request, 'blog/user.html', {'form': form})
 
 
+@login_required
 def add_comment(request, pk):
     form = CommentForm(request.POST or None)
     if form.is_valid():
@@ -103,6 +106,7 @@ def add_comment(request, pk):
     return redirect('blog:post_detail', pk=pk)
 
 
+@login_required
 def delete_comment(request, pk, comment_pk):
     comment = get_object_or_404(Comment, pk=comment_pk)
     if request.POST:
@@ -112,6 +116,7 @@ def delete_comment(request, pk, comment_pk):
     return render(request, 'blog/comment.html', {'comment': comment})
 
 
+@login_required
 def edit_comment(request, pk, comment_pk):
     comment = get_object_or_404(Comment, pk=comment_pk)
     form = CommentForm(request.POST or None, instance=comment)
@@ -126,6 +131,7 @@ def edit_comment(request, pk, comment_pk):
     return render(request, 'blog/comment.html', context)
 
 
+@login_required
 def delete_post(request, pk=None):
     post = get_object_or_404(get_actual_posts().filter(pk=pk))
     form = PostForm(request.POST or None, instance=post)
