@@ -68,7 +68,6 @@ def create_post(request, pk=None):
     return render(request, 'blog/create.html', context)
 
 
-@login_required
 def profile(request, username):
     user = get_object_or_404(User, username=username)
     if request.user.username != username:
