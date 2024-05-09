@@ -72,9 +72,7 @@ def profile(request, username):
     user = get_object_or_404(User, username=username)
     if request.user != user:
         posts = get_actual_posts().filter(author__username=username)
-        print('чужой !!!!!!!!!')
     else:
-        print('свой !!!!!!!!!')
         posts = Post.objects.filter(author__username=username).\
             order_by('-pub_date')
     paginator = Paginator(posts, POSTS_PER_PAGE)
