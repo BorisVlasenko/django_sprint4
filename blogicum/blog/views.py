@@ -28,7 +28,7 @@ def index(request):
 
 
 def post_detail(request, pk):
-    
+
     post = get_object_or_404(Post, pk=pk)
     if post.is_published or post.author == request.user:
         form = CommentForm()
