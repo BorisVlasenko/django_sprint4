@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404, redirect, HttpResponse
 from django.http import Http404
 from django.core.exceptions import PermissionDenied
 from django.urls import reverse
@@ -29,7 +29,6 @@ def index(request):
 
 
 def post_detail(request, pk):
-
     post = get_object_or_404(Post, pk=pk)
     if post.is_published or post.author == request.user:
         form = CommentForm()
@@ -119,7 +118,7 @@ def delete_comment(request, pk, comment_pk):
         if request.POST:
             comment = get_object_or_404(Comment, pk=comment_pk)
             comment.delete()
-            return redirect('blog:post_detail', pk=pk)
+            return HttpResponse('del')
         return render(request, 'blog/comment.html', {'comment': comment})
     else:
         raise PermissionDenied
