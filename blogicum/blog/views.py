@@ -118,7 +118,11 @@ def delete_comment(request, pk, comment_pk):
         if request.POST:
             comment = get_object_or_404(Comment, pk=comment_pk)
             comment.delete()
-            return HttpResponse('del')
+            post = get_object_or_404(Post, pk=pk)
+            context = {}
+            context['post'] = post
+            context['form'] = CommentForm()
+            return render(request, 'blog/detail.html', context)
         return render(request, 'blog/comment.html', {'comment': comment})
     else:
         raise PermissionDenied
