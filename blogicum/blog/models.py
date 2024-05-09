@@ -37,7 +37,7 @@ class Post(BaseModel):
 
     def get_comments(self):
         return self.comments.order_by('created_at')
-    
+
     def comment_count(self):
         return self.comments.all().count()
 
