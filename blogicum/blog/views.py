@@ -115,14 +115,11 @@ def add_comment(request, pk):
 def delete_comment(request, pk, comment_pk):
     comment = get_object_or_404(Comment, pk=comment_pk)
     if comment.author == request.user or request.user.is_superuser:
+        comment.delete()
         if request.POST:
             comment = get_object_or_404(Comment, pk=comment_pk)
             comment.delete()
-            post = get_object_or_404(Post, pk=pk)
-            context = {}
-            context['post'] = post
-            context['form'] = CommentForm()
-            return render(request, 'blog/detail.html', context)
+            return redirect('blog:post_detail', pk=pk)
         return render(request, 'blog/comment.html', {'comment': comment})
     else:
         raise PermissionDenied
