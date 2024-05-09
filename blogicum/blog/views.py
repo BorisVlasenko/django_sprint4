@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.http import Http404
 from django.urls import reverse
 from django.utils import timezone
 from django.contrib.auth import get_user_model
@@ -27,11 +28,15 @@ def index(request):
 
 
 def post_detail(request, pk):
-    post = get_object_or_404(get_actual_posts().filter(pk=pk))
-    form = CommentForm()
-    context = {}
-    context['form'] = form
-    context['post'] = post
+    
+    post = get_object_or_404(Post, pk=pk)
+    if post.is_published or post.author == request.user:
+        form = CommentForm()
+        context = {}
+        context['form'] = form
+        context['post'] = post
+    else:
+        raise Http404()
     return render(request, 'blog/detail.html', context)
 
 
