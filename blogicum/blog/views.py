@@ -70,9 +70,11 @@ def create_post(request, pk=None):
 
 def profile(request, username):
     user = get_object_or_404(User, username=username)
-    if request.user.username != username:
+    if request.user != user:
         posts = get_actual_posts().filter(author__username=username)
+        print('чужой !!!!!!!!!')
     else:
+        print('свой !!!!!!!!!')
         posts = Post.objects.filter(author__username=username).\
             order_by('-pub_date')
     paginator = Paginator(posts, POSTS_PER_PAGE)
@@ -134,5 +136,6 @@ def edit_comment(request, pk, comment_pk):
 @login_required
 def delete_post(request, pk=None):
     post = get_object_or_404(get_actual_posts().filter(pk=pk))
-    post.delete()
+    if request.user.is_superuser or request.user == post.author:
+        post.delete()
     return redirect('blog:profile', username=request.user.username)
