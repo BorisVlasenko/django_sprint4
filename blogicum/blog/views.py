@@ -134,8 +134,5 @@ def edit_comment(request, pk, comment_pk):
 @login_required
 def delete_post(request, pk=None):
     post = get_object_or_404(get_actual_posts().filter(pk=pk))
-    form = PostForm(request.POST or None, instance=post)
-    context = {}
-    context['form'] = form
-    context['post'] = post
-    return render(request, 'blog/detail.html', context)
+    post.delete()
+    return redirect('blog:profile', username=request.user.username)
