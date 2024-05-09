@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import Http404
+from django.core.exceptions import PermissionDenied
 from django.urls import reverse
 from django.utils import timezone
 from django.contrib.auth import get_user_model
@@ -114,26 +115,31 @@ def add_comment(request, pk):
 @login_required
 def delete_comment(request, pk, comment_pk):
     comment = get_object_or_404(Comment, pk=comment_pk)
-    if request.POST:
-        comment = get_object_or_404(Comment, pk=comment_pk)
-        comment.delete()
-        return redirect('blog:post_detail', pk=pk)
-    return render(request, 'blog/comment.html', {'comment': comment})
+    if comment.author == request.user or request.user.is_superuser:
+        if request.POST:
+            comment = get_object_or_404(Comment, pk=comment_pk)
+            comment.delete()
+            return redirect('blog:post_detail', pk=pk)
+        return render(request, 'blog/comment.html', {'comment': comment})
+    else:
+        raise PermissionDenied
 
 
 @login_required
 def edit_comment(request, pk, comment_pk):
     comment = get_object_or_404(Comment, pk=comment_pk)
-    form = CommentForm(request.POST or None, instance=comment)
-    if request.POST:
+    if comment.author == request.user or request.user.is_superuser:
         form = CommentForm(request.POST or None, instance=comment)
-        if form.is_valid():
-            form.save()
-        return redirect('blog:post_detail', pk=pk)
-    context = {}
-    context['form'] = form
-    context['comment'] = comment
-    return render(request, 'blog/comment.html', context)
+        if request.POST:
+            form = CommentForm(request.POST or None, instance=comment)
+            if form.is_valid():
+                form.save()
+            return redirect('blog:post_detail', pk=pk)
+        context = {}
+        context['form'] = form
+        context['comment'] = comment
+        return render(request, 'blog/comment.html', context)
+    raise PermissionDenied
 
 
 @login_required
