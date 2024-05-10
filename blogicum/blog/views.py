@@ -34,6 +34,25 @@ class CommentDeleteView(DeleteView):
             raise PermissionDenied
 
 
+class PostDeleteView(DeleteView):
+    model = Post
+    template_name = 'blog/create.html'
+
+    def get_success_url(self):
+        success_url = reverse_lazy('blog:profile',
+                                   kwargs={'username':
+                                           self.request.user.username})
+        return success_url
+
+    def get_object(self, queryset=None):
+        pk = self.kwargs.get('pk')
+        post = get_object_or_404(Post, pk=pk)
+        if post.author == self.request.user:
+            return post
+        else:
+            raise PermissionDenied
+
+
 def get_actual_posts():
     return Post.objects.filter(
         is_published=True, category__is_published=True,
