@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404, redirect, HttpResponse
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import Http404
 from django.core.exceptions import PermissionDenied
 from django.urls import reverse
