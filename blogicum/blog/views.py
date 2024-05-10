@@ -115,7 +115,6 @@ def add_comment(request, pk):
 def delete_comment(request, pk, comment_pk):
     comment = get_object_or_404(Comment, pk=comment_pk)
     if comment.author == request.user or request.user.is_superuser:
-        comment.delete()
         if request.POST:
             comment = get_object_or_404(Comment, pk=comment_pk)
             comment.delete()
