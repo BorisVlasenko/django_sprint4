@@ -8,10 +8,31 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from .models import Post, Category, Comment
 from .forms import ProfileForm, PostForm, CommentForm
+from django.urls import reverse_lazy
+from django.views.generic import DeleteView
 
 POSTS_PER_PAGE = 10
 
 User = get_user_model()
+
+
+class CommentDeleteView(DeleteView):
+    model = Comment
+    template_name = 'blog/comment.html'
+
+    def get_success_url(self):
+        pk = self.kwargs.get('pk')
+        success_url = reverse_lazy('blog:post_detail', kwargs={'pk': pk})
+        return success_url
+    
+    def get_object(self, queryset=None):
+        comment_pk = self.kwargs.get('comment_pk')
+        
+        comment = get_object_or_404(Comment, pk=comment_pk)
+        if comment.author == self.request.user:
+            return comment
+        else:
+            raise PermissionDenied
 
 
 def get_actual_posts():
@@ -112,14 +133,18 @@ def add_comment(request, pk):
 
 
 @login_required
-def delete_comment(request, pk, comment_pk):
+def delete_comment1(request, pk, comment_pk):
     comment = get_object_or_404(Comment, pk=comment_pk)
     if comment.author == request.user or request.user.is_superuser:
         if request.POST:
             comment = get_object_or_404(Comment, pk=comment_pk)
             comment.delete()
             return redirect('blog:post_detail', pk=pk)
-        return render(request, 'blog/comment.html', {'comment': comment})
+        context = {}
+        form = CommentForm(instance=comment)
+        context['form'] = form
+        context['comment'] = comment
+        return render(request, 'blog/comment.html', context)
     else:
         raise PermissionDenied
 
