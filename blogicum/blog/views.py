@@ -24,10 +24,9 @@ class CommentDeleteView(DeleteView):
         pk = self.kwargs.get('pk')
         success_url = reverse_lazy('blog:post_detail', kwargs={'pk': pk})
         return success_url
-    
+
     def get_object(self, queryset=None):
         comment_pk = self.kwargs.get('comment_pk')
-        
         comment = get_object_or_404(Comment, pk=comment_pk)
         if comment.author == self.request.user:
             return comment
