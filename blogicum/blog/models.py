@@ -1,20 +1,11 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from core.models import CreateModel, PublishedModel
 
 User = get_user_model()
 
 
-class BaseModel(models.Model):
-    is_published = models.BooleanField(
-        'Опубликовано', default=True,
-        help_text='Снимите галочку, чтобы скрыть публикацию.')
-    created_at = models.DateTimeField('Добавлено', auto_now_add=True)
-
-    class Meta:
-        abstract = True
-
-
-class Post(BaseModel):
+class Post(PublishedModel, CreateModel):
     title = models.CharField('Заголовок', max_length=256)
     text = models.TextField('Текст')
     pub_date = models.DateTimeField('Дата и время публикации',
@@ -35,11 +26,8 @@ class Post(BaseModel):
     def __str__(self):
         return self.title
 
-    def get_comments(self):
-        return self.comments.order_by('created_at')
-
     def comment_count(self):
-        return self.comments.all().count()
+        return self.comments.count()
 
     class Meta:
         verbose_name = 'публикация'
@@ -47,7 +35,7 @@ class Post(BaseModel):
         ordering = ['pub_date']
 
 
-class Category(BaseModel):
+class Category(PublishedModel, CreateModel):
     title = models.CharField('Заголовок', max_length=256)
     description = models.TextField('Описание')
     slug = models.SlugField('Идентификатор', unique=True,
@@ -63,7 +51,7 @@ class Category(BaseModel):
         verbose_name_plural = 'Категории'
 
 
-class Location(BaseModel):
+class Location(PublishedModel, CreateModel):
     name = models.CharField('Название места', max_length=256)
 
     def __str__(self):
@@ -74,12 +62,11 @@ class Location(BaseModel):
         verbose_name_plural = 'Местоположения'
 
 
-class Comment(models.Model):
+class Comment(CreateModel):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     post = models.ForeignKey(Post, on_delete=models.CASCADE,
                              related_name='comments')
     text = models.TextField('Комментарий', blank=False)
-    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name = 'комментарий'

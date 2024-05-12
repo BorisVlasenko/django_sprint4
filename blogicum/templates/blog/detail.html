@@ -36,7 +36,7 @@
             </a>
           </div>
         {% endif %}
-        {% with comments=post.get_comments %}
+        {% with comments=post.comments.all %}
           {% include "includes/comments.html" %}
         {% endwith %}
       </div>
