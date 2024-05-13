@@ -140,23 +140,6 @@ def add_comment(request, pk):
 
 
 @login_required
-def delete_comment1(request, pk, comment_pk):
-    comment = get_object_or_404(Comment, pk=comment_pk)
-    if comment.author == request.user or request.user.is_superuser:
-        if request.POST:
-            comment = get_object_or_404(Comment, pk=comment_pk)
-            comment.delete()
-            return redirect('blog:post_detail', pk=pk)
-        context = {}
-        form = CommentForm(instance=comment)
-        context['form'] = form
-        context['comment'] = comment
-        return render(request, 'blog/comment.html', context)
-    else:
-        raise PermissionDenied
-
-
-@login_required
 def edit_comment(request, pk, comment_pk):
     comment = get_object_or_404(Comment, pk=comment_pk)
     if comment.author == request.user or request.user.is_superuser:
